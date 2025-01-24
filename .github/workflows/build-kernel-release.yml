@@ -27,7 +27,7 @@ jobs:
   trigger-release:
     runs-on: ubuntu-latest
     needs:
-        - build-kernel-13r
+        - build-kernel-op13r
     if: ${{ inputs.make_release }}
     env:
       REPO_OWNER: TheWildJames
