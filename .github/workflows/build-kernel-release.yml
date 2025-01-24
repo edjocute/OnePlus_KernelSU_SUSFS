@@ -7,7 +7,7 @@ permissions:
 on:
   workflow_dispatch:
     inputs:
-      build_op11:
+      build_op13r:
         description: 'Build OP 13r?'
         required: true
         type: boolean
