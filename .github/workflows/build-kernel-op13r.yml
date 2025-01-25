@@ -76,7 +76,9 @@ jobs:
           echo "Adding KernelSU..."
           curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -
           cd ./KernelSU-Next/kernel
-          sed -i 's/ccflags-y += -DKSU_VERSION=16/ccflags-y += -DKSU_VERSION=12321/' ./Makefile
+          #KSU_VERSION=$(expr $(/usr/bin/git rev-list --count HEAD) "+" 10200)
+          #echo "KSU_VERSION=$KSU_VERSION"
+          sed -i 's/ccflags-y += -DKSU_VERSION=16/ccflags-y += -DKSU_VERSION=12335/' ./Makefile
           
       - name: Apply SUSFS Patches
         run: |
@@ -164,7 +166,9 @@ jobs:
           sed -i 's/ -dirty//g' ./common/scripts/setlocalversion || echo "-dirty not found in common"
           sed -i 's/ -dirty//g' ./msm-kernel/scripts/setlocalversion || echo "-dirty not found in msm-kernel"
           
+          echo "common/scripts/setlocalversion"
           cat ./common/scripts/setlocalversion
+          echo "msm-kernel/scripts/setlocalversion"
           cat ./msm-kernel/scripts/setlocalversion
 
           # Run perl command to modify UTS_VERSION
@@ -176,7 +180,8 @@ jobs:
           cd "$CONFIG"
           
           echo "Building the kernel..."
-          rm -rf ./kernel_platform/common/android/abi_gki_protected_exports_*
+          rm -rf ./kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
+          rm -rf ./kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
           #git config --global user.email "bins4us@hotmail.com"
           #git config --global user.name "TheWildJames"
           #git add *
