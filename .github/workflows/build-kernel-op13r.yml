@@ -58,6 +58,7 @@ jobs:
         run: |
           echo "Creating folder for configuration: $CONFIG..."
           mkdir -p "$CONFIG"
+          ls
           cd "$CONFIG"
           
           # Initialize and sync kernel source
@@ -184,10 +185,11 @@ jobs:
           touch .scmversion
           rm -rf ./kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
           rm -rf ./kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
-          git config --global user.name "build"
-          git config --global user.email "3653072+edjocute@users.noreply.github.com"
-          git add *
-          git commit -s -a -m "getting rid of -dirty"
+          rm -rf .git || echo "No .git found!"
+          #git config --global user.name "build"
+          #git config --global user.email "3653072+edjocute@users.noreply.github.com"
+          #git add *
+          #git commit -s -a -m "getting rid of -dirty"
           
           ./kernel_platform/oplus/build/oplus_build_kernel.sh pineapple gki
 
