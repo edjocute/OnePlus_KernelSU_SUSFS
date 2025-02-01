@@ -5,7 +5,7 @@ on:
   
 jobs:
   build-kernel-a14-6-1-kernelsu-susfs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Maximize build space
@@ -32,10 +32,8 @@ jobs:
       - name: Install Repo
         run: |
           # Install dependencies
-          mkdir -p ./git-repo
-          curl https://storage.googleapis.com/git-repo-downloads/repo > ./git-repo/repo
-          chmod a+rx ./git-repo/repo
-          echo "REPO=$GITHUB_WORKSPACE/./git-repo/repo" >> $GITHUB_ENV
+          sudo apt update
+          sudo apt install repo python3 python-is-python3
 
       - name: Clone AnyKernel3 and Other Dependencies
         run: |
@@ -56,18 +54,18 @@ jobs:
       
       - name: Initialize and Sync Kernel Source
         run: |
-          echo "Creating folder for configuration: ${CONFIG}..."
+          echo "Creating folder for configuration: $CONFIG..."
           mkdir -p "$CONFIG"
           ls
           cd "$CONFIG"
           
           # Initialize and sync kernel source
           echo "Initializing and syncing kernel source..."
-          $REPO init -u https://github.com/edjocute/kernel_manifest.git -b oneplus/sm8650 -m oneplus13r_v.xml --repo-rev=v2.16 --depth=1
+          repo init -u https://github.com/edjocute/kernel_manifest.git -b oneplus/sm8650 -m oneplus13r_v.xml --repo-rev=v2.16 --depth=1
           
           # Sync repo and apply patches
-          $REPO --version
-          $REPO --trace sync -c -j$(nproc --all) --no-tags --fail-fast
+          repo --version
+          repo --trace sync -c -j$(nproc --all) --no-tags --fail-fast
 
       - name: Add KernelSU
         run: |
@@ -153,9 +151,18 @@ jobs:
           # Add additional tmpfs config setting
           echo "CONFIG_TMPFS_XATTR=y" >> ./common/arch/arm64/configs/gki_defconfig
 
+      - name: Set LTO to THIN
+        run: |
+         cd "$CONFIG/kernel_platform"
+         
+         echo "CONFIG_LTO_CLANG_FULL=n" >> ./common/arch/arm64/configs/gki_defconfig
+         echo "CONFIG_LTO_CLANG_NONE=n" >> ./common/arch/arm64/configs/gki_defconfig
+         echo "CONFIG_LTO=y" >> ./common/arch/arm64/configs/gki_defconfig
+         echo "CONFIG_LTO_CLANG_THIN=y" >> ./common/arch/arm64/configs/gki_defconfig
+
       - name: Run sed and perl Commands
         run: |
-          echo "Changing to configuration directory: ${CONFIG}..."
+          echo "Changing to configuration directory: $CONFIG..."
           cd "$CONFIG/kernel_platform"
           ls
           
@@ -164,16 +171,11 @@ jobs:
           # Run sed commands for modifications
           sed -i 's/check_defconfig//' ./common/build.config.gki
           #sed -i '$s|echo "\$res"|echo "\$res-Wild+"|' ./common/scripts/setlocalversion
+          #sed -i '$s|echo "\$res"|echo "\$res-Wild+"|' ./msm-kernel/scripts/setlocalversion
           sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" ./build/kernel/kleaf/impl/stamp.bzl
           sed -i 's/ -dirty//g' ./common/scripts/setlocalversion || echo "-dirty not found in common"
-          #sed -i 's/ -dirty//g' ./msm-kernel/scripts/setlocalversion || echo "-dirty not found in msm-kernel"
-          sed -i 's|^source kernel_platform/oplus/build/oplus_setup.sh \$1 \$2|source kernel_platform/oplus/build/oplus_setup.sh \$1 \$2 \$3 \$4 \$5|' ./oplus/build/oplus_build_kernel.sh
+          sed -i 's/ -dirty//g' ./msm-kernel/scripts/setlocalversion || echo "-dirty not found in msm-kernel"
          
-          echo "common/scripts/setlocalversion"
-          cat ./common/scripts/setlocalversion
-          echo "msm-kernel/scripts/setlocalversion"
-          cat ./msm-kernel/scripts/setlocalversion
-
           # Run perl command to modify UTS_VERSION
           perl -pi -e 's{UTS_VERSION="\$\(echo \$UTS_VERSION \$CONFIG_FLAGS \$TIMESTAMP \| cut -b -\$UTS_LEN\)"}{UTS_VERSION="#1 SMP PREEMPT Sat Apr 20 04:20:00 UTC 2024"}' ./common/scripts/mkcompile_h
 
@@ -191,7 +193,7 @@ jobs:
           #git add *
           #git commit -s -a -m "getting rid of -dirty"
           
-          ./kernel_platform/oplus/build/oplus_build_kernel.sh pineapple gki thin all none
+          ./kernel_platform/oplus/build/oplus_build_kernel.sh pineapple gki
 
       - name: Create Bootimgs Folder and Copy Images
         run: |
