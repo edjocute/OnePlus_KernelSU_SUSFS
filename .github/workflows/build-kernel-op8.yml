@@ -4,7 +4,7 @@ on:
   workflow_call:  # This allows this workflow to be called from another workflow
   
 jobs:
-  build-kernel-4.19-kernelsu-susfs:
+  build-op8-kernelsu-susfs:
     runs-on: ubuntu-22.04
 
     steps:
