@@ -1,10 +1,10 @@
-name: Build OnePlus 13r Android 15 6.1 Kernel
+name: Build OnePlus 8 LineageOS 22 4.19 Kernel
 
 on:
   workflow_call:  # This allows this workflow to be called from another workflow
   
 jobs:
-  build-kernel-a14-6-1-kernelsu-susfs:
+  build-kernel-4.19-kernelsu-susfs:
     runs-on: ubuntu-22.04
 
     steps:
@@ -54,10 +54,10 @@ jobs:
       
       - name: Initialize and Sync Kernel Source
         run: |
-          echo "Creating folder for configuration: $CONFIG..."
-          mkdir -p "$CONFIG"
-          ls
-          cd "$CONFIG"
+          #echo "Creating folder for configuration: $CONFIG..."
+          #mkdir -p "$CONFIG"
+          #ls
+          #cd "$CONFIG"
           
           # Initialize and sync kernel source
           echo "Initializing and syncing kernel source..."
@@ -66,8 +66,14 @@ jobs:
           #DEFAULT_MANIFEST_PATH=.repo/manifests/default.xml
           
           # Sync repo and apply patches
-          repo --version
-          repo --trace sync -c -j$(nproc --all) --no-tags --fail-fast
+          #repo --version
+          #repo --trace sync -c -j$(nproc --all) --no-tags --fail-fast
+          
+          git clone -b lineage-22.1 https://github.com/LineageOS/android_kernel_oneplus_sm8150
+          mv android_kernel_oneplus_sm8150 "$CONFIG"
+          cd "$CONFIG"
+          ls
+          
           
       - name: Add KernelSU
         run: |
