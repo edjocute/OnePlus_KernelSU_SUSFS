@@ -61,7 +61,7 @@ jobs:
           
           # Initialize and sync kernel source
           echo "Initializing and syncing kernel source..."
-          repo init --depth=1 --u https://github.com/LineageOS/android_kernel_oneplus_sm8150 -b lineage-22.1
+          #repo init --depth=1 --u https://github.com/LineageOS/android_kernel_oneplus_sm8150 -b lineage-22.1
           #REMOTE_BRANCH=$(git ls-remote https://android.googlesource.com/kernel/common ${FORMATTED_BRANCH})
           #DEFAULT_MANIFEST_PATH=.repo/manifests/default.xml
           
