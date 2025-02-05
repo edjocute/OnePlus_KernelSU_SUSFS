@@ -77,6 +77,7 @@ jobs:
           cd ./KernelSU-Next
           KSU_VERSION=$(expr $(/usr/bin/git rev-list --count HEAD) "+" 10200)
           echo "KSU_VERSION=$KSU_VERSION"
+          echo "KERNEL_SU_VERSION=$KSU_VERSION" >> $GITHUB_ENV
           sed -i 's/ccflags-y += -DKSU_VERSION=16/ccflags-y += -DKSU_VERSION=${KSU_VERSION}/' ./kernel/Makefile
           
       - name: Apply SUSFS Patches
