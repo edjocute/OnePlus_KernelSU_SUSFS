@@ -155,10 +155,9 @@ jobs:
         run: |
          cd "$CONFIG/kernel_platform"
          
-         echo "CONFIG_LTO_CLANG_FULL=n" >> ./common/arch/arm64/configs/gki_defconfig
-         echo "CONFIG_LTO_CLANG_NONE=n" >> ./common/arch/arm64/configs/gki_defconfig
-         echo "CONFIG_LTO=y" >> ./common/arch/arm64/configs/gki_defconfig
-         echo "CONFIG_LTO_CLANG_THIN=y" >> ./common/arch/arm64/configs/gki_defconfig
+         sed -i 's/CONFIG_LTO=n/CONFIG_LTO=y/' "./common/arch/arm64/configs/gki_defconfig"
+         sed -i 's/CONFIG_LTO_CLANG_FULL=y/CONFIG_LTO_CLANG_THIN=y/' "./common/arch/arm64/configs/gki_defconfig"
+         sed -i 's/CONFIG_LTO_CLANG_NONE=y/CONFIG_LTO_CLANG_THIN=y/' "./common/arch/arm64/configs/gki_defconfig"
 
       - name: Run sed and perl Commands
         run: |
